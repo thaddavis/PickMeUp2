@@ -11,12 +11,19 @@
       PickMeUp
     </ion-title>
 
+    <ion-buttons end>
+      <button (click)="map.centerLocation(null)">
+        <ion-icon name="navigate">
+        </ion-icon>
+      </button>
+    </ion-buttons>
+
   </ion-navbar>
 </ion-header>
 
 <ion-content class="home">
   <div class="wrapper">
-    <map [isPickupRequested]="isPickupRequested"></map>
+    <map #map [isPickupRequested]="isPickupRequested"></map>
 
     <div class="bottom request-controls">
 
@@ -25,14 +32,14 @@
         <ion-col width-50>
           <button ion-button block light>
             <ion-icon name="card"></ion-icon>
-            Visa
+            &nbsp;Visa
           </button>
         </ion-col>
 
         <ion-col width-50>
           <button ion-button block light>
             <ion-icon name="cash"></ion-icon>
-            Cash
+            &nbsp;Cash
           </button>
         </ion-col>
 
