@@ -12,15 +12,28 @@ declare var google:any;
 export class MapComponent implements OnInit {
 
   @Input() isPickupRequested: boolean;
+
   public map: any;
+  public isMapIdle: boolean;
 
   constructor( public navCtrl: NavController, public loadingCtrl: LoadingController ) {}
 
   ngOnInit() {
     this.map = this.createMap();
+    this.addMapEventListeners();
 
     this.getCurrentLocation().subscribe(location => {
       this.centerLocation(location);
+    })
+  }
+
+  addMapEventListeners() {
+    google.maps.event.addListener(this.map, 'dragstart', () => {
+      this.isMapIdle = false;
+    })
+
+    google.maps.event.addListener(this.map, 'idle', () => {
+      this.isMapIdle = true;
     })
   }
 
