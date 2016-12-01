@@ -15,6 +15,7 @@ export class MapComponent implements OnInit {
 
   public map: any;
   public isMapIdle: boolean;
+  public currentLocation: any;
 
   constructor( public navCtrl: NavController, public loadingCtrl: LoadingController ) {}
 
@@ -25,6 +26,11 @@ export class MapComponent implements OnInit {
     this.getCurrentLocation().subscribe(location => {
       this.centerLocation(location);
     })
+  }
+
+  updatePickupLocation(location) {
+    this.currentLocation = location;
+    this.centerLocation(location);
   }
 
   addMapEventListeners() {

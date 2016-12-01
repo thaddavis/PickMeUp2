@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 
 declare var google:any;
 
@@ -10,6 +10,8 @@ export class PickupComponent implements OnChanges {
 
   @Input() isPinSet: boolean;
   @Input() map: any;
+  @Input() isPickupRequested: boolean;
+  @Output() updatedPickupLocation: EventEmitter<any> = new EventEmitter<any>();
 
   private pickupMarker: any;
   private popup: any;
@@ -18,14 +20,19 @@ export class PickupComponent implements OnChanges {
 
   ngOnChanges(changes) {
 
-    if (this.isPinSet) {
-      this.showPickupMarker();
-    } else {
-      this.removePickupMarker();
+    if (!this.isPickupRequested) {
+      if (this.isPinSet) {
+        this.showPickupMarker();
+      } else {
+        this.removePickupMarker();
+      }
     }
   }
 
   showPickupMarker() {
+
+    this.removePickupMarker();
+
     this.pickupMarker = new google.maps.Marker({
       map: this.map,
       animation: google.maps.Animation.BOUNCE,
@@ -40,6 +47,9 @@ export class PickupComponent implements OnChanges {
     }, 750);
 
     this.showPickupTime();
+
+    // send pickup location
+    this.updatedPickupLocation.next(this.pickupMarker.getPosition());
   }
 
   removePickupMarker() {
