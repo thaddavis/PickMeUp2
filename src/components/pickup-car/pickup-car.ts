@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Car } from '../../providers/car';
+import { PickupPubSub } from '../../providers/pickup-pub-sub';
 
 import * as SlidingMarker from 'marker-animate-unobtrusive';
 
@@ -18,7 +19,7 @@ export class PickupCarComponent implements OnInit, OnChanges {
   public pickupCarMarker: any;
   public polylinePath: any;
 
-  constructor(public car:Car) {
+  constructor(public car:Car, private pickupPubSub: PickupPubSub) {
   }
 
   ngOnInit() {
@@ -55,22 +56,33 @@ export class PickupCarComponent implements OnInit, OnChanges {
     this.polylinePath.setMap(this.map);
   }
 
-  updateCar() {
+  updateCar(cbDone) {
     this.car.getPickupCar().subscribe(car => {
       // animate car to next point
       this.pickupCarMarker.setPosition(car.position);
+      // set direction path for car
       this.polylinePath.setPath(car.path);
+      // update arrival time
+      this.pickupPubSub.emitArrivalTime(car.time);
+
 
       // keep updating car
       if (car.path.length > 1) {
         setTimeout(() => {
-          this.updateCar();
+          this.updateCar(cbDone);
         }, 100);
       } else {
         // car arrived
-
+        cbDone();
       }
     });
+  }
+
+  checkForRiderPickup() {
+    this.car.pollForRiderPickup()
+      .subscribe( data => {
+        this.pickupPubSub.emitPickUp();
+      })
   }
 
   requestCar() {
@@ -81,7 +93,7 @@ export class PickupCarComponent implements OnInit, OnChanges {
          // show car path/directions to you
          this.showDirections(car.path);
          // keep updating car
-         this.updateCar();
+         this.updateCar(() => this.checkForRiderPickup() );
       });
   }
 

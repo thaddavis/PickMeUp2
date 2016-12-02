@@ -4,13 +4,21 @@ import 'rxjs/add/operator/map';
 import { Simulate } from './simulate';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
- import 'rxjs/add/operator/switchMap';
- import 'rxjs/add/operator/share';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/share';
 
 @Injectable()
 export class Car {
 
   constructor(public http: Http, public simulate: Simulate) {}
+
+  pollForRiderPickup() {
+    return this.simulate.riderPickedUp();
+  }
+
+  pollForRiderDropoff() {
+    return this.simulate.riderDroppedOff();
+  }
 
   getPickupCar() {
     return this.simulate.getPickupCar();

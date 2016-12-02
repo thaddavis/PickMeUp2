@@ -1,4 +1,6 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import { PickupPubSub } from '../../providers/pickup-pub-sub';
+import { Observable } from 'rxjs/Observable';
 
 declare var google:any;
 
@@ -6,7 +8,7 @@ declare var google:any;
   selector: 'pickup',
   templateUrl: 'pickup.html'
 })
-export class PickupComponent implements OnChanges {
+export class PickupComponent implements OnInit, OnChanges {
 
   @Input() isPinSet: boolean;
   @Input() map: any;
@@ -15,8 +17,17 @@ export class PickupComponent implements OnChanges {
 
   private pickupMarker: any;
   private popup: any;
+  private pickupSubscription: any;
 
-  constructor() {}
+  constructor(private pickupPubSub: PickupPubSub) {}
+
+  ngOnInit() {
+    this.pickupSubscription = this.pickupPubSub.watch().subscribe(e => {
+      if (e.event === this.pickupPubSub.EVENTS.ARRIVAL_TIME) {
+        this.updateTime(e.data);
+      }
+    })
+  }
 
   ngOnChanges(changes) {
 
@@ -69,6 +80,11 @@ export class PickupComponent implements OnChanges {
     google.maps.event.addListener(this.pickupMarker, 'click', () => {
       this.popup.open(this.map, this.pickupMarker);
     });
+  }
+
+  updateTime(seconds) {
+    let minutes = Math.floor(seconds/60);
+    this.popup.setContent(`<h5>${minutes} minutes</h5>`);
   }
 
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/timer';
 
 declare var google:any;
 
@@ -14,6 +15,16 @@ export class Simulate {
 
   constructor(public http: Http) {
     this.directionsService = new google.maps.DirectionsService();
+  }
+
+  riderPickedUp() {
+    // simulate rider picked up after 1 second
+    return Observable.timer(1000);
+  }
+
+  riderDroppedOff() {
+    // simulate rider dropped off after 1 second
+    return Observable.timer(1000);
   }
 
   //ngOnInit() {
